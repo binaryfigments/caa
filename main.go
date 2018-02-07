@@ -3,28 +3,27 @@ package pkicaa
 import (
 	"strings"
 
-	"github.com/miekg/dns"
 	"golang.org/x/net/publicsuffix"
 )
 
 type CAAdata struct {
 	Domain       string  `json:"domain,omitempty"`
+	Found        bool    `json:"found,omitempty"`
 	Hosts        []*host `json:"host,omitempty"`
 	Error        string  `json:"error,omitempty"`
 	ErrorMessage string  `json:"errormessage,omitempty"`
 }
 
 type host struct {
-	Hostname          string        `json:"hostname,omitempty"`
-	CAAraw            dns.RR        `json:"caaraw,omitempty"`
-	CAArecords        []*caarecords `json:"caarecords,omitempty"`
-	AuthenticatedData bool          `json:"authenticated_data,omitempty"`
-	ResponseCode      int           `json:"responsecode"`
-	CNAME             string        `json:"cname,omitempty"`
-	DNAME             string        `json:"dname,omitempty"`
+	Hostname          string       `json:"hostname,omitempty"`
+	CAArecords        []*caarecord `json:"caarecords,omitempty"`
+	AuthenticatedData bool         `json:"authenticated_data,omitempty"`
+	ResponseCode      int          `json:"responsecode"`
+	CNAME             string       `json:"cname,omitempty"`
+	DNAME             string       `json:"dname,omitempty"`
 }
 
-type caarecords struct {
+type caarecord struct {
 	Flag  uint8  `json:"flag,omitempty"`
 	Tag   string `json:"tag,omitempty"`
 	Value string `json:"value,omitempty"`
@@ -54,6 +53,7 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 	}
 	caadata.Hosts = append(caadata.Hosts, tophostinfo)
 	if len(tophostinfo.CAArecords) > 0 && full == false {
+		caadata.Found = true
 		return caadata
 	}
 
@@ -79,6 +79,7 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 			}
 			caadata.Hosts = append(caadata.Hosts, hostinfo)
 			if len(hostinfo.CAArecords) > 0 && full == false {
+				caadata.Found = true
 				return caadata
 			}
 		}
@@ -92,6 +93,7 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 		}
 		caadata.Hosts = append(caadata.Hosts, domaininfo)
 		if len(domaininfo.CAArecords) > 0 && full == false {
+			caadata.Found = true
 			return caadata
 		}
 	}

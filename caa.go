@@ -31,7 +31,7 @@ func getCAA(hostname string, domain string, nameserver string) (*host, error) {
 
 	for _, ain := range r.Answer {
 		if a, ok := ain.(*dns.CAA); ok {
-			recorddata := new(caarecords)
+			recorddata := new(caarecord)
 			recorddata.Flag = a.Flag
 			recorddata.Tag = a.Tag
 			recorddata.Value = a.Value
