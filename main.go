@@ -31,7 +31,7 @@ type caarecords struct {
 }
 
 // Get function, main function of this module.
-func Get(hostname string, nameserver string) *CAAdata {
+func Get(hostname string, nameserver string, full bool) *CAAdata {
 	caadata := new(CAAdata)
 
 	caadata.Domain = hostname
@@ -53,6 +53,9 @@ func Get(hostname string, nameserver string) *CAAdata {
 		return caadata
 	}
 	caadata.Hosts = append(caadata.Hosts, tophostinfo)
+	if len(tophostinfo.CAArecords) > 0 && full == false {
+		return caadata
+	}
 
 	if domain != hostname {
 		hostdata := new(host)
@@ -75,6 +78,9 @@ func Get(hostname string, nameserver string) *CAAdata {
 				return caadata
 			}
 			caadata.Hosts = append(caadata.Hosts, hostinfo)
+			if len(hostinfo.CAArecords) > 0 && full == false {
+				return caadata
+			}
 		}
 		dnsnames = append(dnsnames, domain)
 
@@ -85,6 +91,9 @@ func Get(hostname string, nameserver string) *CAAdata {
 			return caadata
 		}
 		caadata.Hosts = append(caadata.Hosts, domaininfo)
+		if len(domaininfo.CAArecords) > 0 && full == false {
+			return caadata
+		}
 	}
 	return caadata
 }

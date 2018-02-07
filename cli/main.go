@@ -12,8 +12,15 @@ import (
 func main() {
 	hostname := strings.ToLower(os.Args[1])
 	nameserver := strings.ToLower(os.Args[2])
+	fullarg := strings.ToLower(os.Args[3])
+	var full bool
+	if fullarg == "true" {
+		full = true
+	} else {
+		full = false
+	}
 
-	caadata := pkicaa.Get(hostname, nameserver)
+	caadata := pkicaa.Get(hostname, nameserver, full)
 
 	json, err := json.MarshalIndent(caadata, "", "  ")
 	if err != nil {
