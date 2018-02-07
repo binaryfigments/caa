@@ -1,11 +1,14 @@
 # caa
+
 CAA check module in Golang.
 
 ## Notes
+
 Initial CAA checker commit.
 Many things to do...
 
-## ResponseCodes:
+## DNS ResponseCodes:
+
 0 = NOERR, no error
 1 = FORMERR, format error (unable to understand the query)
 2 = SERVFAIL, name server problem
