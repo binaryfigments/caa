@@ -1,6 +1,6 @@
-# caa
+# CAA
 
-CAA check module in Golang.
+CAA check library in Golang. Using https://github.com/miekg/dns for the DNS lookups.
 
 ## Notes
 
