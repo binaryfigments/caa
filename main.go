@@ -6,6 +6,7 @@ import (
 	"golang.org/x/net/publicsuffix"
 )
 
+// CAAdata struct is the main struct
 type CAAdata struct {
 	Domain       string  `json:"domain,omitempty"`
 	Found        bool    `json:"found,omitempty"`
