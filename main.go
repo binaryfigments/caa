@@ -24,7 +24,7 @@ type host struct {
 }
 
 type caarecord struct {
-	Flag  uint8  `json:"flag,omitempty"`
+	Flag  uint8  `json:"flag"`
 	Tag   string `json:"tag,omitempty"`
 	Value string `json:"value,omitempty"`
 }
