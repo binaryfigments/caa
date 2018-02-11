@@ -1,6 +1,7 @@
 package pkicaa
 
 import (
+	"errors"
 	"net"
 
 	"github.com/miekg/dns"
@@ -21,6 +22,7 @@ func checkDomain(hostname string, nameserver string) (string, error) {
 	}
 
 	if r.Rcode != dns.RcodeSuccess {
+		err = errors.New("domain lookup not successful")
 		return "", err
 	}
 

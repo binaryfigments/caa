@@ -48,10 +48,16 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 		return caadata
 	}
 
-	_, err = checkDomain(domain, nameserver)
+	ns, err := checkDomain(domain, nameserver)
 	if err != nil {
 		caadata.Error = "Error"
 		caadata.ErrorMessage = err.Error()
+		return caadata
+	}
+
+	if ns == "" {
+		caadata.Error = "Error"
+		caadata.ErrorMessage = "No NS record in SOA"
 		return caadata
 	}
 
