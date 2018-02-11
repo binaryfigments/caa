@@ -48,6 +48,13 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 		return caadata
 	}
 
+	_, err = checkDomain(domain, nameserver)
+	if err != nil {
+		caadata.Error = "Error"
+		caadata.ErrorMessage = err.Error()
+		return caadata
+	}
+
 	domain, err = idna.ToASCII(domain)
 	if err != nil {
 		caadata.Error = "Failed"
