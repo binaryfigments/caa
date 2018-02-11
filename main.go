@@ -48,7 +48,7 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 		return caadata
 	}
 
-	domain, err := idna.ToASCII(domain)
+	domain, err = idna.ToASCII(domain)
 	if err != nil {
 		caadata.Error = "Failed"
 		caadata.ErrorMessage = err.Error()
@@ -61,6 +61,7 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 		caadata.ErrorMessage = err.Error()
 		return caadata
 	}
+
 	caadata.Hosts = append(caadata.Hosts, tophostinfo)
 	if len(tophostinfo.CAArecords) > 0 && full == false {
 		caadata.Found = true
