@@ -3,6 +3,7 @@ package pkicaa
 import (
 	"strings"
 
+	"golang.org/x/net/idna"
 	"golang.org/x/net/publicsuffix"
 )
 
@@ -33,6 +34,7 @@ type caarecord struct {
 // Get function, main function of this module.
 func Get(hostname string, nameserver string, full bool) *CAAdata {
 	caadata := new(CAAdata)
+	hostname = strings.ToLower(hostname)
 
 	caadata.Domain = hostname
 
@@ -42,6 +44,13 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 	domain, err := publicsuffix.EffectiveTLDPlusOne(hostname)
 	if err != nil {
 		caadata.Error = "Error"
+		caadata.ErrorMessage = err.Error()
+		return caadata
+	}
+
+	domain, err := idna.ToASCII(domain)
+	if err != nil {
+		caadata.Error = "Failed"
 		caadata.ErrorMessage = err.Error()
 		return caadata
 	}
