@@ -9,11 +9,13 @@ import (
 
 // CAAdata struct is the main struct
 type CAAdata struct {
-	Domain       string  `json:"domain,omitempty"`
-	Found        bool    `json:"found,omitempty"`
-	Hosts        []*host `json:"host,omitempty"`
-	Error        string  `json:"error,omitempty"`
-	ErrorMessage string  `json:"errormessage,omitempty"`
+	Domain       string   `json:"domain,omitempty"`
+	Found        bool     `json:"found,omitempty"`
+	Issue        []string `json:"issue,omitempty"`
+	IssueWild    []string `json:"issuewild,omitempty"`
+	Hosts        []*host  `json:"host,omitempty"`
+	Error        string   `json:"error,omitempty"`
+	ErrorMessage string   `json:"errormessage,omitempty"`
 }
 
 type host struct {
@@ -35,6 +37,9 @@ type caarecord struct {
 func Get(hostname string, nameserver string, full bool) *CAAdata {
 	caadata := new(CAAdata)
 	hostname = strings.ToLower(hostname)
+
+	var issue []string
+	var issuewild []string
 
 	caadata.Domain = hostname
 
@@ -78,6 +83,17 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 	caadata.Hosts = append(caadata.Hosts, tophostinfo)
 	if len(tophostinfo.CAArecords) > 0 && full == false {
 		caadata.Found = true
+		for _, value := range tophostinfo.CAArecords {
+			if value.Tag == "issue" {
+				// valueca := strings.Split(value.Value, ";")
+				issue = append(issue, value.Value)
+			} else if value.Tag == "issuewild" {
+				issuewild = append(issuewild, value.Value)
+			}
+
+		}
+		caadata.Issue = issue
+		caadata.IssueWild = issuewild
 		return caadata
 	}
 
@@ -104,6 +120,17 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 			caadata.Hosts = append(caadata.Hosts, hostinfo)
 			if len(hostinfo.CAArecords) > 0 && full == false {
 				caadata.Found = true
+				for _, value := range hostinfo.CAArecords {
+					if value.Tag == "issue" {
+						// valueca := strings.Split(value.Value, ";")
+						issue = append(issue, value.Value)
+					} else if value.Tag == "issuewild" {
+						issuewild = append(issuewild, value.Value)
+					}
+
+				}
+				caadata.Issue = issue
+				caadata.IssueWild = issuewild
 				return caadata
 			}
 		}
@@ -118,6 +145,17 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 		caadata.Hosts = append(caadata.Hosts, domaininfo)
 		if len(domaininfo.CAArecords) > 0 && full == false {
 			caadata.Found = true
+			for _, value := range domaininfo.CAArecords {
+				if value.Tag == "issue" {
+					// valueca := strings.Split(value.Value, ";")
+					issue = append(issue, value.Value)
+				} else if value.Tag == "issuewild" {
+					issuewild = append(issuewild, value.Value)
+				}
+
+			}
+			caadata.Issue = issue
+			caadata.IssueWild = issuewild
 			return caadata
 		}
 	}

@@ -2,6 +2,7 @@ package pkicaa
 
 import (
 	"net"
+	"strings"
 
 	"github.com/miekg/dns"
 )
@@ -33,8 +34,8 @@ func getCAA(hostname string, domain string, nameserver string) (*host, error) {
 		if a, ok := ain.(*dns.CAA); ok {
 			recorddata := new(caarecord)
 			recorddata.Flag = a.Flag
-			recorddata.Tag = a.Tag
-			recorddata.Value = a.Value
+			recorddata.Tag = strings.ToLower(a.Tag)
+			recorddata.Value = strings.ToLower(a.Value)
 			hostdata.CAArecords = append(hostdata.CAArecords, recorddata)
 		}
 	}
