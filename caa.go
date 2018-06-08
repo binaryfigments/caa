@@ -26,6 +26,52 @@ func getCAA(hostname string, domain string, nameserver string) (*host, error) {
 	hostdata.AuthenticatedData = r.AuthenticatedData
 	hostdata.ResponseCode = r.Rcode
 
+	if caadata.DNSSEC == true && r.AuthenticatedData == false {
+		caacontrol := new(control)
+		caacontrol.Message = "DNSSEC valid on domain but invalid on subdomain " + hostname + ". CA may not issue."
+		caacontrol.Blocking = true
+		caadata.Controls = append(caadata.Controls, caacontrol)
+		caadata.Blocking = true
+	}
+
+	if caadata.DNSSEC == true {
+		switch r.Rcode {
+		case 0:
+			// nothing
+		case 1:
+			caacontrol := new(control)
+			caacontrol.Message = "DNS code 1, FORMERR, if DNSSEC is on, CA may not issue."
+			caacontrol.Blocking = true
+			caadata.Controls = append(caadata.Controls, caacontrol)
+			caadata.Blocking = true
+		case 2:
+			caacontrol := new(control)
+			caacontrol.Message = "DNS code 2, SERVFAIL, if DNSSEC is on, CA may not issue."
+			caacontrol.Blocking = true
+			caadata.Controls = append(caadata.Controls, caacontrol)
+			caadata.Blocking = true
+		case 3:
+			// nothing
+		case 4:
+			caacontrol := new(control)
+			caacontrol.Message = "DNS code 4, NOTIMPL, if DNSSEC is on, CA may not issue."
+			caacontrol.Blocking = true
+			caadata.Controls = append(caadata.Controls, caacontrol)
+		case 5:
+			caacontrol := new(control)
+			caacontrol.Message = "DNS code 5, REFUSED, if DNSSEC is on, CA may not issue."
+			caacontrol.Blocking = true
+			caadata.Controls = append(caadata.Controls, caacontrol)
+			caadata.Blocking = true
+		default:
+			caacontrol := new(control)
+			caacontrol.Message = "Unknown DNS code, if DNSSEC is on, CA may not issue."
+			caacontrol.Blocking = true
+			caadata.Controls = append(caadata.Controls, caacontrol)
+			caadata.Blocking = true
+		}
+	}
+
 	if r.Rcode != dns.RcodeSuccess {
 		return hostdata, err
 	}

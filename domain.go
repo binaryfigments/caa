@@ -7,7 +7,7 @@ import (
 	"github.com/miekg/dns"
 )
 
-func checkDomain(hostname string, nameserver string) (string, error) {
+func checkDomain(hostname string, nameserver string) (string, bool, error) {
 	var soarecord string
 
 	c := new(dns.Client)
@@ -18,12 +18,12 @@ func checkDomain(hostname string, nameserver string) (string, error) {
 
 	r, _, err := c.Exchange(m, net.JoinHostPort(nameserver, "53"))
 	if r == nil {
-		return "", err
+		return "", false, err
 	}
 
 	if r.Rcode != dns.RcodeSuccess {
 		err = errors.New("domain lookup not successful")
-		return "", err
+		return "", false, err
 	}
 
 	for _, ain := range r.Answer {
@@ -32,5 +32,5 @@ func checkDomain(hostname string, nameserver string) (string, error) {
 		}
 	}
 
-	return soarecord, nil
+	return soarecord, r.AuthenticatedData, nil
 }
