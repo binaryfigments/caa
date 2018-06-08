@@ -19,3 +19,7 @@ Here some DNS response codes, maybe I have to map them later.
 4 = NOTIMPL, not implemented
 5 = REFUSED (e.g., refused zone transfer requests)
 ```
+
+## CA information
+
+Some CA's seem to check different then others. Not all resolving nameservers are giving the same answers.
