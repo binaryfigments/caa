@@ -41,11 +41,9 @@ type caarecord struct {
 	Value string `json:"value,omitempty"`
 }
 
-var caadata = new(CAAdata)
-
 // Get function, main function of this module.
 func Get(hostname string, nameserver string, full bool) *CAAdata {
-	// caadata := new(CAAdata)
+	caadata := new(CAAdata)
 	hostname = strings.ToLower(hostname)
 
 	var issue []string
@@ -91,14 +89,14 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 		return caadata
 	}
 
-	domaininfo, err := getCAA(domain, domain, nameserver)
+	domaininfo, err := getCAA(domain, domain, nameserver, caadata)
 	if err != nil {
 		caadata.Error = "Error"
 		caadata.ErrorMessage = err.Error()
 		return caadata
 	}
 
-	tophostinfo, err := getCAA(hostname, domain, nameserver)
+	tophostinfo, err := getCAA(hostname, domain, nameserver, caadata)
 	if err != nil {
 		caadata.Error = "Error"
 		caadata.ErrorMessage = err.Error()
@@ -124,7 +122,7 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 
 	if tophostinfo.CNAME != "" {
 		cname := strings.TrimSuffix(tophostinfo.CNAME, ".")
-		cnameinfo, err := getCAA(cname, domain, nameserver)
+		cnameinfo, err := getCAA(cname, domain, nameserver, caadata)
 		if err != nil {
 			caadata.Error = "Error"
 			caadata.ErrorMessage = err.Error()
@@ -163,7 +161,7 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 			hosts = strings.TrimPrefix(hosts, hostparts[0]+".")
 			dnsnames = append(dnsnames, hosts+"."+domain)
 
-			hostinfo, err := getCAA(hosts+"."+domain, domain, nameserver)
+			hostinfo, err := getCAA(hosts+"."+domain, domain, nameserver, caadata)
 			if err != nil {
 				caadata.Error = "Error"
 				caadata.ErrorMessage = err.Error()
@@ -172,7 +170,7 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 
 			if hostinfo.CNAME != "" {
 				cname := strings.TrimSuffix(hostinfo.CNAME, ".")
-				cnameinfo, err := getCAA(cname, domain, nameserver)
+				cnameinfo, err := getCAA(cname, domain, nameserver, caadata)
 				if err != nil {
 					caadata.Error = "Error"
 					caadata.ErrorMessage = err.Error()

@@ -7,7 +7,7 @@ import (
 	"github.com/miekg/dns"
 )
 
-func getCAA(hostname string, domain string, nameserver string) (*host, error) {
+func getCAA(hostname string, domain string, nameserver string, caadata *CAAdata) (*host, error) {
 	hostdata := new(host)
 	hostdata.Hostname = hostname
 
