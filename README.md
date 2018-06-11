@@ -7,11 +7,11 @@ CAA check library in Golang. Using https://github.com/miekg/dns for the DNS look
 Initial CAA checker commit.
 Many things to do...
 
-## DNS ResponseCodes:
+## DNS ResponseCodes
 
 Here some DNS response codes, maybe I have to map them later.
 
-```
+```text
 0 = NOERR, no error
 1 = FORMERR, format error (unable to understand the query)
 2 = SERVFAIL, name server problem

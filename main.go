@@ -17,7 +17,7 @@ type CAAdata struct {
 	IssueWild    []string   `json:"issuewild,omitempty"`
 	Hosts        []*host    `json:"host,omitempty"`
 	Controls     []*control `json:"control,omitempty"`
-	Error        string     `json:"error,omitempty"`
+	Error        bool       `json:"error,omitempty"`
 	ErrorMessage string     `json:"errormessage,omitempty"`
 }
 
@@ -56,14 +56,14 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 
 	domain, err := publicsuffix.EffectiveTLDPlusOne(hostname)
 	if err != nil {
-		caadata.Error = "Error"
+		caadata.Error = true
 		caadata.ErrorMessage = err.Error()
 		return caadata
 	}
 
 	ns, isdnssec, err := checkDomain(domain, nameserver)
 	if err != nil {
-		caadata.Error = "Error"
+		caadata.Error = true
 		caadata.ErrorMessage = err.Error()
 		return caadata
 	}
@@ -77,28 +77,28 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 	}
 
 	if ns == "" {
-		caadata.Error = "Error"
+		caadata.Error = true
 		caadata.ErrorMessage = "No NS record in SOA"
 		return caadata
 	}
 
 	domain, err = idna.ToASCII(domain)
 	if err != nil {
-		caadata.Error = "Failed"
+		caadata.Error = true
 		caadata.ErrorMessage = err.Error()
 		return caadata
 	}
 
 	domaininfo, err := getCAA(domain, domain, nameserver, caadata)
 	if err != nil {
-		caadata.Error = "Error"
+		caadata.Error = true
 		caadata.ErrorMessage = err.Error()
 		return caadata
 	}
 
 	tophostinfo, err := getCAA(hostname, domain, nameserver, caadata)
 	if err != nil {
-		caadata.Error = "Error"
+		caadata.Error = true
 		caadata.ErrorMessage = err.Error()
 		return caadata
 	}
@@ -124,7 +124,7 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 		cname := strings.TrimSuffix(tophostinfo.CNAME, ".")
 		cnameinfo, err := getCAA(cname, domain, nameserver, caadata)
 		if err != nil {
-			caadata.Error = "Error"
+			caadata.Error = true
 			caadata.ErrorMessage = err.Error()
 			return caadata
 		}
@@ -163,7 +163,7 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 
 			hostinfo, err := getCAA(hosts+"."+domain, domain, nameserver, caadata)
 			if err != nil {
-				caadata.Error = "Error"
+				caadata.Error = true
 				caadata.ErrorMessage = err.Error()
 				return caadata
 			}
@@ -172,7 +172,7 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 				cname := strings.TrimSuffix(hostinfo.CNAME, ".")
 				cnameinfo, err := getCAA(cname, domain, nameserver, caadata)
 				if err != nil {
-					caadata.Error = "Error"
+					caadata.Error = true
 					caadata.ErrorMessage = err.Error()
 					return caadata
 				}
