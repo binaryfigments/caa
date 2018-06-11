@@ -78,7 +78,7 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 
 	if ns == "" {
 		caadata.Error = true
-		caadata.ErrorMessage = "No NS record in SOA"
+		caadata.ErrorMessage = "Domain not found"
 		return caadata
 	}
 
@@ -91,16 +91,34 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 
 	domaininfo, err := getCAA(domain, domain, nameserver, caadata)
 	if err != nil {
-		caadata.Error = true
-		caadata.ErrorMessage = err.Error()
-		return caadata
+		if caadata.DNSSEC == true {
+			caacontrol := new(control)
+			caacontrol.Message = "Lookup error and DNSSEC enabled: " + err.Error()
+			caacontrol.Blocking = true
+			caadata.Blocking = true
+			caadata.Controls = append(caadata.Controls, caacontrol)
+		} else {
+			caacontrol := new(control)
+			caacontrol.Message = "Lookup error: " + err.Error()
+			caacontrol.Blocking = false
+			caadata.Controls = append(caadata.Controls, caacontrol)
+		}
 	}
 
 	tophostinfo, err := getCAA(hostname, domain, nameserver, caadata)
 	if err != nil {
-		caadata.Error = true
-		caadata.ErrorMessage = err.Error()
-		return caadata
+		if caadata.DNSSEC == true {
+			caacontrol := new(control)
+			caacontrol.Message = "Lookup error and DNSSEC enabled: " + err.Error()
+			caacontrol.Blocking = true
+			caadata.Blocking = true
+			caadata.Controls = append(caadata.Controls, caacontrol)
+		} else {
+			caacontrol := new(control)
+			caacontrol.Message = "Lookup error: " + err.Error()
+			caacontrol.Blocking = false
+			caadata.Controls = append(caadata.Controls, caacontrol)
+		}
 	}
 
 	caadata.Hosts = append(caadata.Hosts, tophostinfo)
@@ -124,9 +142,18 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 		cname := strings.TrimSuffix(tophostinfo.CNAME, ".")
 		cnameinfo, err := getCAA(cname, domain, nameserver, caadata)
 		if err != nil {
-			caadata.Error = true
-			caadata.ErrorMessage = err.Error()
-			return caadata
+			if caadata.DNSSEC == true {
+				caacontrol := new(control)
+				caacontrol.Message = "Lookup error and DNSSEC enabled: " + err.Error()
+				caacontrol.Blocking = true
+				caadata.Blocking = true
+				caadata.Controls = append(caadata.Controls, caacontrol)
+			} else {
+				caacontrol := new(control)
+				caacontrol.Message = "Lookup error: " + err.Error()
+				caacontrol.Blocking = false
+				caadata.Controls = append(caadata.Controls, caacontrol)
+			}
 		}
 
 		caadata.Hosts = append(caadata.Hosts, cnameinfo)
@@ -163,18 +190,36 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 
 			hostinfo, err := getCAA(hosts+"."+domain, domain, nameserver, caadata)
 			if err != nil {
-				caadata.Error = true
-				caadata.ErrorMessage = err.Error()
-				return caadata
+				if caadata.DNSSEC == true {
+					caacontrol := new(control)
+					caacontrol.Message = "Lookup error and DNSSEC enabled: " + err.Error()
+					caacontrol.Blocking = true
+					caadata.Blocking = true
+					caadata.Controls = append(caadata.Controls, caacontrol)
+				} else {
+					caacontrol := new(control)
+					caacontrol.Message = "Lookup error: " + err.Error()
+					caacontrol.Blocking = false
+					caadata.Controls = append(caadata.Controls, caacontrol)
+				}
 			}
 
 			if hostinfo.CNAME != "" {
 				cname := strings.TrimSuffix(hostinfo.CNAME, ".")
 				cnameinfo, err := getCAA(cname, domain, nameserver, caadata)
 				if err != nil {
-					caadata.Error = true
-					caadata.ErrorMessage = err.Error()
-					return caadata
+					if caadata.DNSSEC == true {
+						caacontrol := new(control)
+						caacontrol.Message = "Lookup error and DNSSEC enabled: " + err.Error()
+						caacontrol.Blocking = true
+						caadata.Blocking = true
+						caadata.Controls = append(caadata.Controls, caacontrol)
+					} else {
+						caacontrol := new(control)
+						caacontrol.Message = "Lookup error: " + err.Error()
+						caacontrol.Blocking = false
+						caadata.Controls = append(caadata.Controls, caacontrol)
+					}
 				}
 
 				caadata.Hosts = append(caadata.Hosts, cnameinfo)
