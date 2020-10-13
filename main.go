@@ -122,11 +122,10 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 	}
 
 	caadata.Hosts = append(caadata.Hosts, tophostinfo)
-	if len(tophostinfo.CAArecords) > 0 && full == false {
+	if len(tophostinfo.CAArecords) > 0 {
 		caadata.Found = true
 		for _, value := range tophostinfo.CAArecords {
 			if value.Tag == "issue" {
-				// valueca := strings.Split(value.Value, ";")
 				issue = append(issue, value.Value)
 			} else if value.Tag == "issuewild" {
 				issuewild = append(issuewild, value.Value)
@@ -157,7 +156,7 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 		}
 
 		caadata.Hosts = append(caadata.Hosts, cnameinfo)
-		if len(tophostinfo.CAArecords) > 0 && full == false {
+		if len(tophostinfo.CAArecords) > 0 {
 			caadata.Found = true
 			for _, value := range tophostinfo.CAArecords {
 				if value.Tag == "issue" {
@@ -223,7 +222,7 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 				}
 
 				caadata.Hosts = append(caadata.Hosts, cnameinfo)
-				if len(tophostinfo.CAArecords) > 0 && full == false {
+				if len(tophostinfo.CAArecords) > 0 {
 					caadata.Found = true
 					for _, value := range tophostinfo.CAArecords {
 						if value.Tag == "issue" {
@@ -241,7 +240,7 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 			}
 
 			caadata.Hosts = append(caadata.Hosts, hostinfo)
-			if len(hostinfo.CAArecords) > 0 && full == false {
+			if len(hostinfo.CAArecords) > 0 {
 				caadata.Found = true
 				for _, value := range hostinfo.CAArecords {
 					if value.Tag == "issue" {
@@ -261,7 +260,7 @@ func Get(hostname string, nameserver string, full bool) *CAAdata {
 
 		caadata.Hosts = append(caadata.Hosts, domaininfo)
 
-		if len(domaininfo.CAArecords) > 0 && full == false {
+		if len(domaininfo.CAArecords) > 0 {
 			caadata.Found = true
 			for _, value := range domaininfo.CAArecords {
 				if value.Tag == "issue" {
